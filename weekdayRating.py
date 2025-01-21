@@ -1,8 +1,8 @@
-import pandas as pd
 import numpy as np
+import pandas as pd
 from datetime import datetime
 import matplotlib.pyplot as plt
-from pandas import Series, DataFrame
+from pandas import DataFrame
 
 
 def filterBadMovies(df: pd.DataFrame) -> pd.DataFrame:
@@ -39,11 +39,28 @@ def avergesByGenre(df: pd.DataFrame) -> DataFrame:
     pbg = pd.DataFrame(columns=["Genre" , "No. of Movies" , "Avg. Gross", "Avg. Rating"])
     for genre in genres:
         tmp = df[df['Genre'] == genre]
-        pbg.loc[len(pbg)] = [genre , len(tmp.index) , tmp["Adjusted Gross ($mill)"].mean(), (tmp["IMDb Rating"].mean()  + tmp["MovieLens Rating"].mean() * 2) / 2 ]
-
+        pbg.loc[len(pbg)] = [genre , len(tmp.index) , tmp["Adjusted Gross ($mill)"].mean(), (tmp["IMDb Rating"].mean()
+        + tmp["MovieLens Rating"].mean() * 2) / 2 ]
     pbg.sort_values("No. of Movies", ascending=False, inplace=True)
     return pbg
-def plotAverages(worst: pd.DataFrame , best: pd.DataFrame):
-    worstSeries = pd.Series(worst['No. of Movies'])
-    print(worstSeries)
+def plotDataframe(df: pd.DataFrame):
+    sortByAvgRating(df, ascending=True)
+    bottomMovies = df.head(100)
+    topMovies = df.tail(100)
+    genres = np.intersect1d(topMovies['Genre'], bottomMovies['Genre'])
+    pbg = pd.DataFrame(columns=["Genre" , "Nr. of bad movies" , "Nr. of good movies" , "Avg. bad rating", "Avg. good rating"])
+    for genre in genres:
+        botRow = bottomMovies[bottomMovies['Genre'] == genre]
+        topRow = topMovies[topMovies['Genre'] == genre]
+        botNr = len(botRow.index)
+        topNr = len(topRow.index)
+        avgBotRtg =  (botRow["IMDb Rating"].mean() + botRow["MovieLens Rating"].mean() * 2) / 2
+        avgTopRtg =  (topRow["IMDb Rating"].mean() + topRow["MovieLens Rating"].mean() * 2) / 2
+        pbg.loc[len(pbg)] = [genre , botNr, topNr, avgBotRtg, avgTopRtg]
+    pbg.set_index('Genre', inplace=True)
+    pbg.sort_values(["Nr. of bad movies"] + ["Nr. of good movies"], inplace=True)
+    return pbg
+def plotAverages(df: pd.DataFrame):
+
+    df[["Nr. of bad movies" , "Nr. of good movies"]].plot(kind='bar' , figsize=(16,9))
     plt.show()
