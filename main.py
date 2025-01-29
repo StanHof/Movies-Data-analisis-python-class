@@ -3,6 +3,9 @@ import numpy as np
 import datetime
 from budgetRatings import *
 from genreRating import *
+from genreEarnings import *
+from seasonsGenre import plotSeasonGenre
+
 if __name__ == '__main__':
     ds = pd.read_csv('movies.csv', encoding="ISO-8859-1")
     convertToDatetime(ds)
@@ -15,9 +18,10 @@ if __name__ == '__main__':
     genreRatingPlot(ds)
 
     #jakie gatunki filmu radza sobie najlepiej w dana pore roku
-    budgetCategoryRating(ds)
+    plotSeasonGenre(ds)
 
     #czy budzet filmu wplywa na oceny IMDb czy MovieLens bardziej
-    genreRatingPlot(ds)
+    budgetCategoryRating(ds)
 
     #jakie gatunki filmowe zarabiaja najwiecej
+    genreEarnings(ds)
