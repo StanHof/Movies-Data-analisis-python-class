@@ -11,7 +11,6 @@ def budgetCategoryRating(df : pd.DataFrame):
         IMDb = tmp["IMDb Rating"].mean()
         MovieLens = tmp["MovieLens Rating"].mean()
         budgetDf.iloc[i] = [f"{i*30} - {(i+1)*30} mill" , IMDb, MovieLens]
-    budgetDf.plot()
-    plt.show()
+    return budgetDf
 
 

@@ -2,6 +2,8 @@ import numpy as np
 import pandas as pd
 from datetime import datetime
 import math
+from tkinter import *
+from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 import matplotlib.pyplot as plt
 def filterBadMovies(df: pd.DataFrame) -> pd.DataFrame:
     badMovies = df[(df['IMDb Rating'] + df['MovieLens Rating']*2) / 2 < 5]

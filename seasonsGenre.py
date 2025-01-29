@@ -15,5 +15,4 @@ def plotSeasonGenre(df: pd.DataFrame):
 
     seasonDF = pd.DataFrame(index = df["Genre"].unique() , columns = ["Winter", "Spring", "Summer", "Fall"])
     seasonDF.apply(lambda x : addRow(x , seasons), axis = 1)
-    seasonDF.plot.pie(subplots = True , figsize=(16,9), legend = False , autopct= '%1.2f%%')
-    plt.show()
+    return seasonDF

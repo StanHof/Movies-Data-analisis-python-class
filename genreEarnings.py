@@ -7,6 +7,4 @@ def genreEarnings(df : pd.DataFrame):
         if len(df[df["Genre"] == genre].index) > 10:
             earnings.loc[genre] = df[df["Genre"] == genre]["Adjusted Gross ($mill)"].mean()
     earnings.sort_values(["Avg. Gross ($mill)"] , inplace= True)
-    print(earnings)
-    earnings.plot()
-    plt.show()
+    return earnings

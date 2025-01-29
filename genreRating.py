@@ -16,6 +16,4 @@ def genreRatingPlot(df: pd.DataFrame):
         pbg.loc[len(pbg)] = [genre , botNr, topNr, avgBotRtg, avgTopRtg]
     pbg.set_index('Genre', inplace=True)
     pbg.sort_values(["Nr. of bad movies"] + ["Nr. of good movies"], inplace=True)
-    pbg[["Nr. of bad movies", "Nr. of good movies"]].plot(kind='bar', figsize=(16, 9))
-    plt.show()
     return pbg
