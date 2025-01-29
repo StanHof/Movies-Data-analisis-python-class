@@ -1,10 +1,17 @@
 from conversions import *
 def plotSeasonGenre(df: pd.DataFrame):
-    def addRow(row, seasons):
+    others = [0 , 0 , 0 ,0]
+    def addRow(row, seasons, others):
         i = 0
         for season in seasons:
-            row.iloc[i] = len(season[season["Genre"] == row.name].index)
+            if len(season[season["Genre"] == row.name].index) >= 10:
+                row.iloc[i] = len(season[season["Genre"] == row.name].index)
+            else:
+                others[i] += len(season[season["Genre"] == row.name].index)
             i += 1
+
+
+
 
     winter = df[df["Season"] == 1]
     spring = df[df["Season"] == 2]
@@ -14,5 +21,8 @@ def plotSeasonGenre(df: pd.DataFrame):
     seasons = [winter, spring, summer, fall]
 
     seasonDF = pd.DataFrame(index = df["Genre"].unique() , columns = ["Winter", "Spring", "Summer", "Fall"])
-    seasonDF.apply(lambda x : addRow(x , seasons), axis = 1)
+    seasonDF.apply(lambda x : addRow(x , seasons, others), axis = 1)
+
+    seasonDF.loc["others"] = others
+    print(seasonDF)
     return seasonDF

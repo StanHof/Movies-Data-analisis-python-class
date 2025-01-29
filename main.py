@@ -2,6 +2,8 @@ import pandas as pd
 import numpy as np
 import datetime
 
+from matplotlib.pyplot import ylabel
+
 import budgetRatings
 import genreRating
 from budgetRatings import *
@@ -25,8 +27,6 @@ if __name__ == '__main__':
     root = tk.Tk()
     root.geometry('1920x1080')
 
-
-    # Tkinter Application
     frame = tk.Frame(root)
     label = tk.Label(text="Analiza Danych")
     label.config(font=("Courier", 16))
@@ -51,15 +51,25 @@ if __name__ == '__main__':
         canvas.draw()
         canvas.get_tk_widget().pack(side=tk.TOP, fill=tk.BOTH, expand=1)
         genreEarnings(ds).plot(ax=ax)
+
     def b3():
         global canvas
         if canvas:
             canvas.get_tk_widget().destroy()
-        fig, ax = plt.subplots()
+        fig, axs = plt.subplots(2 , 2)
         canvas = FigureCanvasTkAgg(fig, master=root)
-        canvas.draw()
         canvas.get_tk_widget().pack(side=tk.TOP, fill=tk.BOTH, expand=1)
-        plotSeasonGenre(ds).plot.pie(subplots = True , figsize=(16,9), legend = False , autopct= '%1.2f%%', ax=ax)
+        plotSeasonGenre(ds).plot.pie(subplots = True , figsize=(16,9), legend = False , ax=axs , ylabel = "",  autopct=lambda p: '{:.1f}%'.format(round(p)) if p > 0 else '')
+        canvas.draw()
+        ax = axs[0, 0]
+        ax.set_title("Winter")
+        ax = axs[1, 0]
+        ax.set_title("Spring")
+        ax = axs[0, 1]
+        ax.set_title("Summer")
+        ax = axs[1, 1]
+        ax.set_title("Fall")
+
     def b4():
         global canvas
         if canvas:
@@ -68,7 +78,9 @@ if __name__ == '__main__':
         canvas = FigureCanvasTkAgg(fig, master=root)
         canvas.draw()
         canvas.get_tk_widget().pack(side=tk.TOP, fill=tk.BOTH, expand=1)
-        budgetCategoryRating(ds).plot(ax=ax)
+        budgetCategoryRating(ds).plot(ax=ax,  ylabel='Rating', title='Avergage Rating in budget categories')
+
+
 
     button1 = tk.Button(frame, text="Worst and best rated genres", command=b1)
     button1.pack()
