@@ -27,6 +27,8 @@ def convertToDatetime(df: pd.DataFrame):
 def convertToFloat(df: pd.DataFrame):
     df['Adjusted Gross ($mill)'] = df['Adjusted Gross ($mill)'].str.replace(',', '')
     df['Adjusted Gross ($mill)'] = df['Adjusted Gross ($mill)'].apply(lambda x: float(x))
+    df["Gross ($mill)"] = df["Gross ($mill)"].str.replace(',', '')
+    df["Gross ($mill)"] = df["Gross ($mill)"].apply(lambda x: float(x))
     return
 
 def filterByYear(df: pd.DataFrame, year: int , newer: bool) -> pd.DataFrame:
@@ -44,6 +46,7 @@ def avergesByGenre(df: pd.DataFrame) -> DataFrame:
         + tmp["MovieLens Rating"].mean() * 2) / 2 ]
     pbg.sort_values("No. of Movies", ascending=False, inplace=True)
     return pbg
+
 def plotDataframe(df: pd.DataFrame):
     sortByAvgRating(df, ascending=True)
     bottomMovies = df.head(100)
@@ -87,13 +90,27 @@ def plotSeason(df: pd.DataFrame):
     seasonDF = pd.DataFrame(index = df["Genre"].unique() , columns = ["Winter", "Spring", "Summer", "Fall"])
     seasonDF.apply(lambda x : addRow(x , seasons), axis = 1)
     print(seasonDF)
-    fig, axes = plt.subplots(nrows=2, ncols=2, figsize=(10, 8))
-    fig.add_subplot(111)
-    winterplot = seasonDF.plot.pie(y = "Winter", figsize=(10,10))
-    fig.add_subplot(111)
-    springplot = seasonDF.plot.pie(y = "Spring", figsize=(10,10))
-    fig.add_subplot(111)
-    summerplot = seasonDF.plot.pie(y = "Summer", figsize=(10,10))
-    fig.add_subplot(111)
-    fallplot = seasonDF.plot.pie(y = "Fall", figsize=(10,10))
+    seasonDF.plot.pie(subplots = True , figsize=(16,9), legend = False , autopct= '%1.2f%%')
     plt.show()
+def addAvgRating(df: pd.DataFrame):
+    df["Avg Rating"] = df.apply(lambda x : (x["IMDb Rating"] + x["MovieLens Rating"]*2) / 2, axis = 1)
+    df["MovieLens Rating"] = df.apply(lambda x : x["MovieLens Rating"]*2, axis = 1)
+
+def addbudgetAdjusted(df : pd.DataFrame):
+    df["Budget Adjusted"] = df.apply(lambda x : (x["Adjusted Gross ($mill)"] / x["Gross ($mill)"]) * x["Budget ($mill)"], axis = 1)
+    df["Budget Cat"] = df.apply(lambda x : int(x["Budget Adjusted"] / 30) , axis = 1)
+
+def budgetCategory(df : pd.DataFrame):
+    df.sort_values("Budget Cat", ascending = False, inplace = True)
+    budgetDf = pd.DataFrame(index=df["Budget Cat"].unique() , columns =  ["Budget", "IMDb Ratings Avg", "MovieLens Ratings Avg"] )
+    budgetDf.sort_index(inplace = True)
+    for i in range(10):
+        tmp = df[df["Budget Cat"] == i]
+        IMDb = tmp["IMDb Rating"].mean()
+        MovieLens = tmp["MovieLens Rating"].mean()
+        budgetDf.iloc[i] = [f"{i*30} - {(i+1)*30} mill" , IMDb, MovieLens]
+    print(budgetDf)
+    budgetDf.plot()
+    plt.show()
+
+

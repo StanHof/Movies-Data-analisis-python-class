@@ -7,8 +7,9 @@ if __name__ == '__main__':
     convertToDatetime(ds)
     convertToFloat(ds)
     addSeasonColmun(ds)
-    plotSeason(ds)
-
+    addAvgRating(ds)
+    addbudgetAdjusted(ds)
+    budgetCategory(ds)
     #jakie gatunki filmow najczesciej znajduja sie w top i bottom 100 ocenianych
     #jakie gatunki filmu radza sobie najlepiej w dana pore roku
     #czy budzet filmu wplywa na oceny IMDb czy MovieLens bardziej
