@@ -2,8 +2,9 @@ import numpy as np
 import pandas as pd
 from datetime import datetime
 import matplotlib.pyplot as plt
+from numba.cuda.libdevice import ceilf
 from pandas import DataFrame
-
+import math
 
 def filterBadMovies(df: pd.DataFrame) -> pd.DataFrame:
     badMovies = df[(df['IMDb Rating'] + df['MovieLens Rating']*2) / 2 < 5]
@@ -63,4 +64,36 @@ def plotDataframe(df: pd.DataFrame):
 def plotAverages(df: pd.DataFrame):
 
     df[["Nr. of bad movies" , "Nr. of good movies"]].plot(kind='bar' , figsize=(16,9))
+    plt.show()
+def addSeasonColmun(df: pd.DataFrame):
+    def addSeason(row: pd.DataFrame) -> int:
+        if row["Release Date"].month == 12:
+            return 1
+        else:
+            return math.ceil((row["Release Date"].month / 2.75))
+    df["Season"] = df.apply(addSeason , axis = 1)
+
+def plotSeason(df: pd.DataFrame):
+    def addRow(row, seasons):
+        i = 0
+        for season in seasons:
+            row.iloc[i] = len(season[season["Genre"] == row.name].index)
+            i += 1
+    winter = df[df["Season"] == 1]
+    spring = df[df["Season"] == 2]
+    summer = df[df["Season"] == 3]
+    fall = df[df["Season"] == 4]
+    seasons = [winter, spring, summer, fall]
+    seasonDF = pd.DataFrame(index = df["Genre"].unique() , columns = ["Winter", "Spring", "Summer", "Fall"])
+    seasonDF.apply(lambda x : addRow(x , seasons), axis = 1)
+    print(seasonDF)
+    fig, axes = plt.subplots(nrows=2, ncols=2, figsize=(10, 8))
+    fig.add_subplot(111)
+    winterplot = seasonDF.plot.pie(y = "Winter", figsize=(10,10))
+    fig.add_subplot(111)
+    springplot = seasonDF.plot.pie(y = "Spring", figsize=(10,10))
+    fig.add_subplot(111)
+    summerplot = seasonDF.plot.pie(y = "Summer", figsize=(10,10))
+    fig.add_subplot(111)
+    fallplot = seasonDF.plot.pie(y = "Fall", figsize=(10,10))
     plt.show()
